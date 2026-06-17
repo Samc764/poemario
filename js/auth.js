@@ -1,17 +1,19 @@
 const authMessage = document.getElementById('authMessage');
-const authStatus = document.getElementById('authStatus');
 const logoutButton = document.getElementById('logoutButton');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 
 function updateAuthState() {
     const username = getUsername();
-    if (getToken() && username) {
-        authMessage.textContent = `Sesión iniciada como ${username}. Ahora puedes guardar poemas e imágenes.`;
-        logoutButton.style.display = 'inline-block';
-    } else {
-        authMessage.textContent = 'Inicia sesión o regístrate para guardar y ver tus poemas e imágenes.';
-        logoutButton.style.display = 'none';
+    if (authMessage) {
+        if (getToken() && username) {
+            authMessage.textContent = `Sesión iniciada como ${username}.`;
+        } else {
+            authMessage.textContent = 'Inicia sesión o regístrate para usar la aplicación.';
+        }
+    }
+    if (logoutButton) {
+        logoutButton.style.display = getToken() ? 'inline-block' : 'none';
     }
 }
 
@@ -19,6 +21,7 @@ logoutButton?.addEventListener('click', () => {
     clearAuth();
     updateAuthState();
     alert('Has cerrado sesión.');
+    window.location.href = 'index.html';
 });
 
 loginForm?.addEventListener('submit', async (event) => {
@@ -32,9 +35,8 @@ loginForm?.addEventListener('submit', async (event) => {
             body: JSON.stringify({ username, password }),
         });
         setAuth(data.access_token, username);
-        updateAuthState();
         alert('Has iniciado sesión correctamente.');
-        loginForm.reset();
+        window.location.href = 'home.html';
     } catch (error) {
         alert(error.message);
     }
@@ -43,16 +45,16 @@ loginForm?.addEventListener('submit', async (event) => {
 registerForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const username = document.getElementById('registerUsername').value.trim();
-    const email = document.getElementById('registerEmail').value.trim();
     const password = document.getElementById('registerPassword').value.trim();
-    if (!username || !email || !password) return;
+    if (!username || !password) return;
     try {
         await request('/register', {
             method: 'POST',
-            body: JSON.stringify({ username, email, password }),
+            body: JSON.stringify({ username, password }),
         });
         alert('Cuenta creada correctamente. Ahora inicia sesión.');
         registerForm.reset();
+        window.location.href = 'index.html';
     } catch (error) {
         alert(error.message);
     }

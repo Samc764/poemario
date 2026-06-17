@@ -20,12 +20,16 @@ app.add_middleware(
 
 @app.post('/api/register', response_model=schemas.UserOut)
 def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing = db.query(models.User).filter((models.User.username == user_in.username) | (models.User.email == user_in.email)).first()
+    if user_in.email:
+        existing = db.query(models.User).filter((models.User.username == user_in.username) | (models.User.email == user_in.email)).first()
+    else:
+        existing = db.query(models.User).filter(models.User.username == user_in.username).first()
     if existing:
         raise HTTPException(status_code=400, detail='User with that username or email already exists')
+    email_value = user_in.email or f"{user_in.username}@poemario.local"
     user = models.User(
         username=user_in.username,
-        email=user_in.email,
+        email=email_value,
         hashed_password=auth.get_password_hash(user_in.password)
     )
     db.add(user)

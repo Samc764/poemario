@@ -5,8 +5,8 @@ import datetime
 
 class UserCreate(BaseModel):
     username: str
-    email: EmailStr
     password: str
+    email: Optional[EmailStr] = None
 
 
 class UserLogin(BaseModel):
@@ -17,7 +17,7 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
-    email: EmailStr
+    email: Optional[EmailStr] = None
 
     class Config:
         orm_mode = True
