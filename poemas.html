@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poemario</title>
+    <link rel="stylesheet" href="css/poemas.css">
+</head>
+<body>
+    <a class="volver-inicio" href="index.html">← Volver al inicio</a>
+    <h1>Agregar poema</h1>
+    <section>
+        <form id="formPoema">
+            <label>
+                Título
+                <input id="titulo" type="text" required>
+            </label>
+            <label>
+                Autor
+                <input id="autor" type="text">
+            </label>
+            <label>
+                Poema
+                <textarea id="texto" rows="8" required></textarea>
+            </label>
+            <button type="submit">Guardar poema</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Poemas guardados</h2>
+        <ul id="listaPoemas"></ul>
+    </section>
+
+    <script src="js/poemas.js"></script>
+    
+</body>
+</html>

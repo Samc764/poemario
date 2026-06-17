@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería</title>
+    <link rel="stylesheet" href="css/poemas.css">
+</head>
+<body>
+    <a class="volver-inicio" href="index.html">← Volver al inicio</a>
+    <h1>Agregar imagen</h1>
+    <section>
+        <form id="formGaleria">
+            <label>
+                Título
+                <input id="tituloImagen" type="text" required>
+            </label>
+            <label>
+                URL de la imagen
+                <input id="urlImagen" type="url" required placeholder="https://ejemplo.com/imagen.jpg">
+            </label>
+            <label>
+                Descripción (máx. 200 palabras)
+                <textarea id="descripcion" rows="8" required maxlength="1200" placeholder="Escribe una descripción breve..."></textarea>
+            </label>
+            <button type="submit">Guardar imagen</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Galería guardada</h2>
+        <ul id="listaImagenes"></ul>
+    </section>
+
+    <script src="js/galeria.js"></script>
+</body>
+</html>
