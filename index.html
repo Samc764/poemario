@@ -1,59 +1,37 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Still With You</title>
+    <title>Iniciar sesión - Poemario</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <nav class="barra-navegacion">
-        <ul class="enlaces">
-            <li><a href="poemas.html">Poemas</a></li>
-            <li><a href="galeria.html">Galería</a></li>
-            <li><a href="#">Contacto</a></li>
-        </ul>
-    </nav>
+    <section class="login-page">
+        <div class="login-card">
+            <h1>Bienvenido a Poemario</h1>
+            <p>Inicia sesión o crea una cuenta para guardar y explorar poemas e imágenes.</p>
 
-    <header class="hero">
-        <div class="contenedor-titulo">
-            <img src="https://i.pinimg.com/736x/71/85/dd/7185dd5fa1b14461d4d634b963314bf3.jpg" alt="Colibrí" class="colibri">
-            <div class="titulo-texto">
-                <h1>Still With You</h1>
-                <p class="subtitulo">
-                    Un espacio donde los poemas permanecen en el tiempo.
-                </p>
+            <div class="auth-forms">
+                <form id="loginForm" class="auth-form">
+                    <h3>Iniciar sesión</h3>
+                    <label>Usuario o email<input type="text" id="loginUsername" required></label>
+                    <label>Contraseña<input type="password" id="loginPassword" required></label>
+                    <button type="submit">Entrar</button>
+                </form>
+
+                <form id="registerForm" class="auth-form">
+                    <h3>Registrarse</h3>
+                    <label>Usuario<input type="text" id="registerUsername" required></label>
+                    <label>Email<input type="email" id="registerEmail" required></label>
+                    <label>Contraseña<input type="password" id="registerPassword" required></label>
+                    <button type="submit">Crear cuenta</button>
+                </form>
             </div>
-        </div>
-    </header>
-
-    <section class="auth-panel">
-        <div class="auth-status" id="authStatus">
-            <h2>Bienvenido</h2>
-            <p id="authMessage">Inicia sesión o regístrate para guardar y ver tus poemas e imágenes.</p>
-            <button id="logoutButton" class="secondary-button" style="display:none;">Cerrar sesión</button>
-        </div>
-
-        <div class="auth-forms">
-            <form id="loginForm" class="auth-form">
-                <h3>Iniciar sesión</h3>
-                <label>Usuario o email<input type="text" id="loginUsername" required></label>
-                <label>Contraseña<input type="password" id="loginPassword" required></label>
-                <button type="submit">Entrar</button>
-            </form>
-
-            <form id="registerForm" class="auth-form">
-                <h3>Registrarse</h3>
-                <label>Usuario<input type="text" id="registerUsername" required></label>
-                <label>Email<input type="email" id="registerEmail" required></label>
-                <label>Contraseña<input type="password" id="registerPassword" required></label>
-                <button type="submit">Crear cuenta</button>
-            </form>
         </div>
     </section>
 
-    <script src="script.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
 
