@@ -108,6 +108,23 @@ h1{
     color: #d8d8d8;
 }
 
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #f2f2f2;
+}
+
+.login-card {
+    width: min(980px, 100%);
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+}
+
 .auth-panel {
     max-width: 1024px;
     margin: 40px auto 0;
