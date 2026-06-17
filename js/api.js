@@ -1,4 +1,8 @@
-const API_URL = 'http://127.0.0.1:8000/api';
+// API base: by default local; can be overridden by adding
+// <meta name="api-base" content="https://mi-backend.example.com/api"> in HTML
+const defaultApi = 'http://127.0.0.1:8000/api';
+const metaApi = typeof document !== 'undefined' && document.querySelector('meta[name="api-base"]');
+const API_URL = metaApi ? metaApi.content : defaultApi;
 const TOKEN_KEY = 'authToken';
 const USERNAME_KEY = 'authUser';
 
@@ -31,10 +35,15 @@ async function request(path, options = {}) {
         ...getAuthHeaders(),
         ...options.headers,
     };
-    const response = await fetch(`${API_URL}${path}`, {
-        ...options,
-        headers,
-    });
+    let response;
+    try {
+        response = await fetch(`${API_URL}${path}`, {
+            ...options,
+            headers,
+        });
+    } catch (err) {
+        throw new Error(`Error de red: no se pudo conectar con el backend en ${API_URL}. Asegúrate de que esté desplegado y de actualizar la meta tag "api-base" en tus páginas con la URL correcta.`);
+    }
     const text = await response.text();
     let data;
     try {
