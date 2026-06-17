@@ -90,6 +90,17 @@ button:hover {
     transform: translateY(-1px);
 }
 
+.page-status {
+    max-width: 760px;
+    margin: 0 auto 20px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #d1d1d1;
+    color: #333333;
+    font-size: 0.95rem;
+}
+
 .volver-inicio {
     display: inline-block;
     margin-bottom: 24px;

@@ -35,9 +35,10 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post('/api/login', response_model=schemas.Token)
-def login(form_data: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Accept JSON with username and password (form_data.password)
-    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+def login(form_data: schemas.UserLogin, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(
+        (models.User.username == form_data.username) | (models.User.email == form_data.username)
+    ).first()
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail='Incorrect username or password')
     access_token = auth.create_access_token(data={"sub": user.username})

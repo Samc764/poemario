@@ -1,74 +1,70 @@
-const STORAGE_KEY_GALERIA = 'galeriaGuardada';
 const formGaleria = document.getElementById('formGaleria');
 const tituloImagen = document.getElementById('tituloImagen');
 const urlImagen = document.getElementById('urlImagen');
 const descripcion = document.getElementById('descripcion');
 const listaImagenes = document.getElementById('listaImagenes');
+const statusMessage = document.getElementById('galeriaStatus');
 
-function cargarGaleria() {
-    const stored = localStorage.getItem(STORAGE_KEY_GALERIA);
-    const imagenes = stored ? JSON.parse(stored) : [];
-    mostrarGaleria(imagenes);
-}
-
-function guardarImagen(item) {
-    const stored = localStorage.getItem(STORAGE_KEY_GALERIA);
-    const imagenes = stored ? JSON.parse(stored) : [];
-    imagenes.unshift(item);
-    localStorage.setItem(STORAGE_KEY_GALERIA, JSON.stringify(imagenes));
-    mostrarGaleria(imagenes);
-}
-
-function borrarImagen(index) {
-    const stored = localStorage.getItem(STORAGE_KEY_GALERIA);
-    const imagenes = stored ? JSON.parse(stored) : [];
-    imagenes.splice(index, 1);
-    localStorage.setItem(STORAGE_KEY_GALERIA, JSON.stringify(imagenes));
-    mostrarGaleria(imagenes);
+function setGaleriaStatus(message, isError = false) {
+    if (!statusMessage) return;
+    statusMessage.textContent = message;
+    statusMessage.style.color = isError ? '#a00' : '#333';
 }
 
 function mostrarGaleria(imagenes) {
     listaImagenes.innerHTML = '';
-    if (imagenes.length === 0) {
+    if (!imagenes || imagenes.length === 0) {
         listaImagenes.innerHTML = '<li>No hay imágenes guardadas aún.</li>';
         return;
     }
-    imagenes.forEach((item, index) => {
+    imagenes.forEach(item => {
         const elemento = document.createElement('li');
         elemento.className = 'galeria-item';
         elemento.innerHTML = `
             <div class="galeria-header">
-                <h3>${item.titulo}</h3>
-                <button class="borrar-imagen" data-index="${index}">Borrar</button>
+                <h3>${item.title}</h3>
             </div>
-            <img src="${item.url}" alt="${item.titulo}">
-            <p>${item.descripcion}</p>
+            <img src="${item.url}" alt="${item.title}">
+            <p>${item.description || ''}</p>
         `;
-
-        elemento.querySelector('.borrar-imagen').addEventListener('click', () => borrarImagen(index));
         listaImagenes.appendChild(elemento);
     });
 }
 
-function contarPalabras(texto) {
-    return texto.trim().split(/\s+/).filter(Boolean).length;
+async function cargarGaleria() {
+    try {
+        setGaleriaStatus('Cargando galería...');
+        const imagenes = await request('/images');
+        mostrarGaleria(imagenes);
+        setGaleriaStatus('Galería actualizada.');
+    } catch (error) {
+        setGaleriaStatus(`No se pudo cargar la galería: ${error.message}`, true);
+    }
 }
 
-formGaleria.addEventListener('submit', event => {
+formGaleria.addEventListener('submit', async event => {
     event.preventDefault();
-    const item = {
-        titulo: tituloImagen.value.trim(),
-        url: urlImagen.value.trim(),
-        descripcion: descripcion.value.trim()
-    };
-    if (!item.titulo || !item.url || !item.descripcion) return;
-    const palabras = contarPalabras(item.descripcion);
-    if (palabras > 200) {
-        alert('La descripción no puede tener más de 200 palabras. Actualmente tiene ' + palabras + '.');
+    if (!getToken()) {
+        alert('Debes iniciar sesión para guardar imágenes.');
         return;
     }
-    guardarImagen(item);
-    formGaleria.reset();
+    const item = {
+        title: tituloImagen.value.trim(),
+        url: urlImagen.value.trim(),
+        description: descripcion.value.trim(),
+    };
+    if (!item.title || !item.url) return;
+    try {
+        await request('/images', {
+            method: 'POST',
+            body: JSON.stringify(item),
+        });
+        formGaleria.reset();
+        await cargarGaleria();
+        alert('Imagen guardada correctamente.');
+    } catch (error) {
+        alert(error.message);
+    }
 });
 
 document.addEventListener('DOMContentLoaded', cargarGaleria);

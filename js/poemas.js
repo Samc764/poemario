@@ -1,59 +1,65 @@
-const STORAGE_KEY = 'poemasGuardados';
 const form = document.getElementById('formPoema');
 const tituloInput = document.getElementById('titulo');
 const autorInput = document.getElementById('autor');
 const textoInput = document.getElementById('texto');
 const listaPoemas = document.getElementById('listaPoemas');
+const statusMessage = document.getElementById('poemaStatus');
 
-function cargarPoemas() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const poemas = stored ? JSON.parse(stored) : [];
-    mostrarPoemas(poemas);
-}
-
-function guardarPoema(poema) {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const poemas = stored ? JSON.parse(stored) : [];
-    poemas.unshift(poema);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(poemas));
-    mostrarPoemas(poemas);
-}
-
-function borrarPoema(index) {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const poemas = stored ? JSON.parse(stored) : [];
-    poemas.splice(index, 1);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(poemas));
-    mostrarPoemas(poemas);
+function setStatus(message, isError = false) {
+    if (!statusMessage) return;
+    statusMessage.textContent = message;
+    statusMessage.style.color = isError ? '#a00' : '#333';
 }
 
 function mostrarPoemas(poemas) {
     listaPoemas.innerHTML = '';
-    if (poemas.length === 0) {
+    if (!poemas || poemas.length === 0) {
         listaPoemas.innerHTML = '<li>No hay poemas guardados aún.</li>';
         return;
     }
-    poemas.forEach((poema, index) => {
+    poemas.forEach(poema => {
         const item = document.createElement('li');
         item.className = 'poema-item';
-        const autorTexto = poema.autor ? ` - ${poema.autor}` : '';
-        item.innerHTML = `<div class="poema-header"><h3>${poema.titulo}${autorTexto}</h3><button class="borrar-poema" data-index="${index}">Borrar</button></div><p>${poema.texto}</p>`;
-        const borrarBtn = item.querySelector('.borrar-poema');
-        borrarBtn.addEventListener('click', () => borrarPoema(index));
+        const autorTexto = poema.author ? ` - ${poema.author}` : '';
+        item.innerHTML = `<h3>${poema.title}${autorTexto}</h3><p>${poema.text}</p>`;
         listaPoemas.appendChild(item);
     });
 }
 
-form.addEventListener('submit', event => {
+async function cargarPoemas() {
+    try {
+        setStatus('Cargando poemas...');
+        const poemas = await request('/poems');
+        mostrarPoemas(poemas);
+        setStatus('Poemas actualizados.');
+    } catch (error) {
+        setStatus(`No se pudieron cargar los poemas: ${error.message}`, true);
+    }
+}
+
+form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (!getToken()) {
+        alert('Debes iniciar sesión para guardar poemas.');
+        return;
+    }
     const poema = {
-        titulo: tituloInput.value.trim(),
-        autor: autorInput.value.trim(),
-        texto: textoInput.value.trim()
+        title: tituloInput.value.trim(),
+        author: autorInput.value.trim(),
+        text: textoInput.value.trim(),
     };
-    if (!poema.titulo || !poema.texto) return;
-    guardarPoema(poema);
-    form.reset();
+    if (!poema.title || !poema.text) return;
+    try {
+        await request('/poems', {
+            method: 'POST',
+            body: JSON.stringify(poema),
+        });
+        form.reset();
+        await cargarPoemas();
+        alert('Poema guardado correctamente.');
+    } catch (error) {
+        alert(error.message);
+    }
 });
 
 document.addEventListener('DOMContentLoaded', cargarPoemas);
